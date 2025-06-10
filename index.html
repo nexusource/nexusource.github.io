@@ -1,0 +1,297 @@
+<!-- 名称：The NEXUS Anchor (Internet：ウェブページ) -->
+<!-- 説明：Project-NEXUSの一般公開可能な情報を発信する艦外通信網であり最外殻機構。 -->
+<!-- 著作：Creat by nemo. Copyright © SoraFlete. All Rights Reserved. -->
+
+<!-- 完全独立版 nexusが汎用版 -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+      <!-- 外部から読み込み -->
+      <title>LINK of NEXUS</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="theme-color" content="#1e28d2">
+      <link rel="icon" href="https://nemonowa.github.io/icon.png">
+      <meta property="og:image" content="https://nemonowa.github.io/icon.png">
+      <meta property="og:title" content="NEXUS異空旅団｜逓信観測局">
+      <meta property="og:description" content="The Official Web-Site for Project✯NEXUS. Copyright © SoraFlete. All Rights Reserved.">
+</head>
+<body>
+  <audio id="diveAudio" src="asset/dive.mp3" loop></audio>
+  <audio id="bubbleAudio" src="asset/bubble.mp3"></audio>
+
+  <div id="ocean">
+    <div id="overlay"></div>
+    <div id="content">
+      <h1>Welcome to the NEXUS</h1>
+      <button id="diveButton"> > DIVE < </button>
+    </div>
+    <!-- ここで気泡を画面全体に配置 -->
+    <div id="bubbleContainer"></div>
+  </div>
+
+  <!-- 得点を表示する要素 -->
+  <div id="score">Score: 0</div>
+  
+</body>
+</html>
+
+// CSS
+<style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #005f80, #001d2e);
+      animation: fadeInAnimation ease 3s; /* フェードイン処理 */
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes fadeInAnimation {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    #ocean {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* 半透明のオーバーレイ */
+      display: none; /* 最初は非表示 */
+    }
+
+    #content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+      z-index: 1000;
+    }
+
+    h1 {
+      font-size: 3rem;
+      user-select: none; /* 選択を禁止 */
+      color: white; /* 文字色を白に設定 */
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.8); /* 発光効果 */
+    }
+
+    button {
+      font-size: 2rem;
+      padding: 15px 30px;
+      background-color: #ff7f50; /* オレンジ色のボタン */
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.8); /* 発光効果 */
+    }
+
+    button:hover {
+      background-color: #ff6347; /* ホバー時の色 */
+    }
+
+    .bubble {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.6);
+      width: 20px; /* 大きさを20pxに変更 */
+      height: 20px; /* 大きさを20pxに変更 */
+      border-radius: 50%;
+      pointer-events: auto; /* マウスイベントを有効化 */
+      animation: bubbleRise 10s linear infinite; /* 10秒かけて画面全体に上昇 */
+      cursor: pointer; /* ポインターを指定 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem; /* 絵文字のサイズ */
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.6); /* 初期の発光効果 */
+    }
+
+    .bubble.clicked {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 1); /* クリック時の発光効果 */
+    }
+
+    @keyframes bubbleRise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    #score {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 2rem;
+      color: white;
+      z-index: 1000;
+      opacity: 0; /* 最初は非表示 */
+      transition: opacity 1.5s ease; /* 徐々にフェードアウト */
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.8); /* 発光効果 */
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      button {
+        font-size: 1.5rem;
+        padding: 10px 20px;
+      }
+    }
+
+    .fullscreen-notice {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1em;
+      color: white;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.8); /* 発光効果 */
+    }
+  </style>
+
+
+
+
+// JS
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var diveButton = document.getElementById('diveButton');
+      var overlay = document.getElementById('overlay');
+
+      diveButton.addEventListener('click', function() {
+        // フェードインのアニメーションを追加
+        overlay.style.opacity = '0';
+        overlay.style.display = 'block';
+        setTimeout(function() {
+          overlay.style.transition = 'opacity 1s';
+          overlay.style.opacity = '1';
+        }, 100); // 0.1秒後にフェードインを開始
+
+        // 深海に潜る演出（setTimeoutを使って2秒後に実行）
+        setTimeout(function() {
+          window.location.href = "https://nemonowa.github.io/nexus"; // 深海ページにリダイレクト
+        }, 2000); // 2秒後に深海ページに遷移
+      });
+
+      var diveAudio = document.getElementById('diveAudio');
+      var bubbleAudio = document.getElementById('bubbleAudio');
+      var score = 0; // 初期得点
+
+      function playAudio() {
+        diveAudio.play();
+      }
+
+      document.addEventListener('click', handleInput);
+      document.addEventListener('keydown', handleInput);
+
+      function handleInput() {
+        playAudio();
+        createBubble();
+      }
+
+      // 得点を表示する要素を取得
+      var scoreDisplay = document.getElementById('score');
+      var scoreTimeout; // スコア表示のタイムアウト用の変数
+
+      // 気泡をクリックした時の得点加算処理
+      function handleClick() {
+        var bubble = this;
+        var bubbleSize = parseFloat(bubble.style.width); // 気泡の大きさを取得
+        var points = Math.round(bubbleSize); // サイズに応じた得点（四捨五入）
+
+        // 得点を加算
+        score += points;
+        scoreDisplay.textContent = 'Depth Level: ' + score;
+        scoreDisplay.style.opacity = '1'; // スコアを表示
+
+        // 3秒後にスコアを非表示にする
+        clearTimeout(scoreTimeout); // 既存のタイムアウトをクリア
+        scoreTimeout = setTimeout(function() {
+          scoreDisplay.style.opacity = '0'; // 3秒後にスコアを非表示
+        }, 3000);
+
+        // ランダムな絵文字を表示
+        var emojis = ['🌟', '🎉', '💥', '✨', '🌈', '⭕', '❌', '👀', '⚓', '🐻‍❄️', '🔍', '🕶️', '💣', '🗡️', '⚔️', '🗝️', '☯️', '💯', '♨️', '🎖️', '📥', '🌵', '⚠️', '🎃', '👑', '🔰', '❤️', '📣', '📁', '💾', '🛰️', '📡', '🧬', '📜', '🎫'];
+        var randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        var emojiElement = document.createElement('div');
+        emojiElement.textContent = randomEmoji;
+        emojiElement.style.position = 'absolute';
+        emojiElement.style.fontSize = '2rem';
+        emojiElement.style.top = '50%';
+        emojiElement.style.left = '50%';
+        emojiElement.style.transform = 'translate(-50%, -50%)';
+        emojiElement.style.pointerEvents = 'none'; // クリックイベントを無効化
+        bubble.appendChild(emojiElement); // 泡の中に絵文字を追加
+
+        // 1秒後に絵文字を削除
+        setTimeout(function() {
+          emojiElement.remove();
+        }, 1000);
+
+        // 音声ファイルを最初から再生
+        bubbleAudio.currentTime = 0;
+        bubbleAudio.play(); // 音声再生
+
+        // 発光効果を追加
+        bubble.classList.add('clicked');
+
+        setTimeout(function() {
+          bubble.remove(); // 気泡を削除
+        }, 75); // 0.75秒後に気泡を削除
+      }
+
+      var bubbleContainer = document.getElementById('bubbleContainer');
+
+      // 気泡を生成する関数
+      function createBubble() {
+        var bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        var size = Math.random() * 60 + 40; // ランダムなサイズ（40px以上90px以下）
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+
+        // ランダムなX座標とY座標を設定
+        var startX = Math.random() * window.innerWidth;
+        var startY = window.innerHeight + size; // 画面下からスタート
+        bubble.style.left = startX + 'px';
+        bubble.style.top = startY + 'px';
+
+        bubbleContainer.appendChild(bubble);
+
+        // 一定時間後に気泡を削除する
+        setTimeout(function() {
+          bubble.remove();
+        }, 25000); // 25秒後に気泡を削除
+
+        // 気泡をクリックした時の挙動を追加
+        bubble.addEventListener('click', handleClick);
+      }
+
+      // 定期的に気泡を生成
+      setInterval(createBubble, 1000); // 1秒ごとに気泡を生成
+    });
+  </script>

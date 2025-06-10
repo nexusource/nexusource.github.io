@@ -1,0 +1,42 @@
+<!-- 名称：The NEXUS Anchor (Internet：ウェブページ) -->
+<!-- 説明：Project-NEXUSの一般公開可能な情報を発信する艦外通信網であり最外殻機構。 -->
+<!-- 著作：Creat by nemo. Copyright © SoraFlete. All Rights Reserved. -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイトル</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 外部から読み込み -->
+    <link rel="stylesheet" href="https://nemonowa.github.io/styles.css">
+    <script src="https://nemonowa.github.io/scripts.js"></script>
+</head>
+<body>
+  <header id="header"></header>
+  <main>
+    <div id="search-container">
+      <h1 id="site-title">NEXUS</h1>
+      <form id="search-form">
+        <input type="text" id="search-input" placeholder="🔍接続座標を入力..." required>
+        <button type="submit">転移</button>
+      </form>
+    </div>
+  </main>
+  
+    <footer id="footer"></footer>
+    <div id="ui"></div>
+  
+</body>
+
+<script>
+  document.getElementById('search-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const input = document.getElementById('search-input').value.trim();
+    if (input) {
+      window.location.href = `https://nemonowa.github.io/${encodeURIComponent(input)}`;
+    }
+  });
+</script>
+</html>
