@@ -1,7 +1,7 @@
-# 著作：Creat by nemo. Copyright © SoraFlete. All Rights Resarved.
+# 著作：Creat by nemo. Copyright © SoraFlete. All Rights Reserved.
 # すべての検索エンジンに対して、サイトの全ページをクロールすることを許可
 User-agent: *
-Disallow: 
+Disallow: /
 
 # 特定の検索エンジン（例: Googlebot）に対して、指定したページをクロールしないように指示
 User-agent: Googlebot
