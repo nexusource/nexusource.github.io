@@ -1,6 +1,6 @@
 # ⚓｜𝐋𝐈𝐍𝐊 𝐨𝐟 𝐍𝐄𝐗𝐔𝐒
 ## ❱ はじめに【README】
-* [preview](https://github.com/nemonowa/twow)
+* [preview] https://nexusource.github.io/
 * [community](https://discord.gg/nqx8esTwzS)
 * [sourcecode](https://github.com/nemonowa/nemonowa.github.io/edit/main/README.md)
 * [README](https://github.com/nemonowa/nemonowa.github.io/edit/main/README.md)
